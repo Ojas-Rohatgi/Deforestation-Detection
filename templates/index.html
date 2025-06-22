@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Deforestation Detection Tool</title>
+
+  <!-- Leaflet CSS & JS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+  <!-- Leaflet Geocoder Plugin -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+  <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+
+  <!-- Leaflet Draw -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #f9f9f9;
+      --text: #2c3e50;
+      --map-border: #2c3e50;
+      --box-bg: #ffffff;
+      --button-hover: #27ae60;
+      --loader-ring: #f3f3f3;
+      --loader-spin: #2ecc71;
+      --gain: #41a8ff;
+      --loss: #ff4c4c;
+      --retain: #3ecf4e;
+      --neutral: #ffffff;
+    }
+
+    [data-theme='dark'] {
+      --bg: #1f1f1f;
+      --text: #f0f0f0;
+      --map-border: #444;
+      --box-bg: #2b2b2b;
+      --button-bg: #27ae60;
+      --button-hover: #219150;
+      --loader-ring: #444;
+      --loader-spin: #27ae60;
+      --border-light: #555;
+    }
+
+    html, body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      transition: background 0.3s, color 0.3s;
+    }
+
+    h2 {
+      text-align: center;
+      margin: 20px 0 10px;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 30px;
+      background: var(--box-bg);
+      color: var(--text);
+      box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 25px 0px;
+      position: sticky;
+      top: 0;
+      z-index: 999;
+    }
+
+    #themeToggle {
+      background: var(--box-bg);
+      color: var(--text);
+      border: 1px solid #ccc;
+      padding: 8px 14px;
+      font-size: 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+
+    #themeToggle:hover {
+      background: var(--button-hover);
+      color: white;
+    }
+
+    #map {
+      height: 75vh;
+      width: 90%;
+      margin: 0 auto;
+      border: 3px solid var(--map-border);
+      border-radius: 12px;
+      transition: border 0.3s;
+      z-index: 0;
+    }
+
+    .controls {
+      max-width: 600px;
+      margin: 30px auto;
+      background: var(--box-bg);
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+      text-align: center;
+    }
+
+    .controls label {
+      font-weight: 600;
+      margin: 0 10px;
+    }
+
+    .controls input {
+      padding: 6px 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      width: 80px;
+      text-align: center;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    .controls button {
+      margin-top: 15px;
+      padding: 10px 20px;
+      background-color: #2ecc71;
+      color: white;
+      font-size: 16px;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      transition:
+        box-shadow 0.2s ease,
+        transform 0.1s ease,
+        background-color 0.2s ease;
+    }
+
+    .controls button:hover {
+      box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+    }
+
+    .controls button:active {
+      box-shadow:
+        rgba(0, 0, 0, 0.2) 0px 10px 20px inset,
+        rgba(0, 0, 0, 0.25) 0px 6px 12px inset;
+      transform: scale(0.97);  /* nice tactile press effect */
+    }
+
+    #loader {
+      margin: 15px auto;
+      border: 6px solid var(--loader-ring);
+      border-top: 6px solid var(--loader-spin);
+      border-radius: 50%;
+      background: white;
+      width: 40px;
+      height: 40px;
+      animation: spin 0.8s linear infinite;
+      display: none;
+    }
+
+    #resultImage {
+      margin: 0 auto;
+      padding:  10px;
+      border-radius: 12px;
+      display: none;
+      object-fit: contain;
+      background: white;
+      box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+    }
+
+    #legend {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      background: var(--box-bg);
+      padding: 12px 15px;
+      border-radius: 8px;
+      box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+      font-size: 14px;
+      z-index: 999;
+      cursor: pointer;
+      display: none;
+    }
+
+    #legend h4 {
+      margin: 0 0 6px;
+      font-size: 15px;
+    }
+
+    #legend div {
+      display: flex;
+      align-items: center;
+      margin-bottom: 4px;
+    }
+
+    #legend span {
+      width: 18px;
+      height: 18px;
+      display: inline-block;
+      margin-right: 8px;
+      border-radius: 3px;
+      border: 1px solid #ccc;
+    }
+
+    #result {
+      text-align: center;
+      margin-bottom: 40px;
+      display: none;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    @media (max-width: 600px) {
+      .controls label, .controls input {
+        display: block;
+        margin: 10px auto;
+      }
+    }
+
+    [data-theme='dark'] {
+      --bg: #1a1a1a;
+      --text: #f0f0f0;
+      --map-border: #555;
+      --box-bg: #242424;
+      --button-bg: #2ecc71;
+      --button-hover: #27ae60;
+      --loader-ring: #444;
+      --loader-spin: #2ecc71;
+    }
+
+    /* Apply consistent border to all containers in dark */
+    [data-theme='dark'] .controls,
+    [data-theme='dark'] .header,
+    [data-theme='dark'] #legend {
+      border: 1px solid var(--border-light);
+      box-shadow: rgba(255, 255, 255, 0.2) 0px 7px 29px 0px;
+      backdrop-filter: blur(6px);
+    }
+
+    [data-theme='dark'] #loader {
+      background: black;
+    }
+
+    [data-theme='dark'] #resultImage {
+      box-shadow: rgba(255, 255, 255, 0.35) 0px 5px 15px;
+    }
+
+    [data-theme='dark'] .controls button:hover {
+      box-shadow: rgba(255, 255, 255, 0.35) 0px 5px 15px;
+    }
+
+    [data-theme='dark'] .controls button:active {
+      box-shadow:
+        rgba(0, 0, 0, 0.2) 0px 10px 20px inset,
+        rgba(0, 0, 0, 0.25) 0px 6px 12px inset;
+      transform: scale(0.97);  /* nice tactile press effect */
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <h2>🌍 Deforestation Detection Tool</h2>
+    <button id="themeToggle">🌙 Dark Mode</button>
+  </div>
+
+  <div id="map"></div>
+
+  <div class="controls">
+    <label>Start Year:
+      <input type="number" id="startYear" value="2013" min="2000" max="2024">
+    </label>
+    <label>End Year:
+      <input type="number" id="endYear" value="2024" min="2000" max="2024">
+    </label>
+    <br />
+    <button onclick="submitSelection()">🔍 Analyze Deforestation</button>
+    <div id="loader"></div>
+  </div>
+
+  <div id="result">
+    <p id="resultText" style="font-size: 18px; display: none;"></p>
+    <img id="resultImage" />
+  </div>
+
+  <div id="legend" onclick="toggleLegendDetails()">
+    <h4>🗺️ Legend </h4>
+    <div id="legend-details" style="display:none;">
+      <div><span style="background: var(--loss);"></span> Vegetation Lost</div>
+      <div><span style="background: var(--retain);"></span> Vegetation Retained</div>
+      <div><span style="background: var(--gain)";></span> Vegetation Gained</div>
+      <div><span style="background: var(--neutral); border: 1px solid #aaa;"></span> No Vegetation</div>
+    </div>
+  </div>
+
+  <script>
+    const map = L.map('map').setView([20, 0], 2);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    L.Control.geocoder({
+      defaultMarkGeocode: true
+    }).addTo(map);
+
+    const drawnItems = new L.FeatureGroup();
+    map.addLayer(drawnItems);
+
+    new L.Control.Draw({
+      draw: {
+        rectangle: true,
+        polyline: false,
+        polygon: false,
+        marker: false,
+        circle: false,
+        circlemarker: false
+      },
+      edit: { featureGroup: drawnItems }
+    }).addTo(map);
+
+    let selectedBounds = null;
+
+    map.on('draw:created', function (e) {
+      drawnItems.clearLayers();
+      let layer = e.layer;
+      drawnItems.addLayer(layer);
+      selectedBounds = layer.getBounds();
+    });
+
+    // 🔄 Update bounds after edit
+    map.on('draw:edited', function (e) {
+      e.layers.eachLayer(function (layer) {
+        selectedBounds = layer.getBounds();
+      });
+    });
+
+
+    function toggleLegendDetails() {
+      const details = document.getElementById("legend-details");
+      details.style.display = details.style.display === "none" ? "block" : "none";
+    }
+
+    function submitSelection() {
+      if (!selectedBounds) {
+        alert("Please draw a rectangle on the map first.");
+        return;
+      }
+
+      const data = {
+        lat_min: selectedBounds.getSouth(),
+        lat_max: selectedBounds.getNorth(),
+        lon_min: selectedBounds.getWest(),
+        lon_max: selectedBounds.getEast(),
+        start_year: parseInt(document.getElementById('startYear').value),
+        end_year: parseInt(document.getElementById('endYear').value)
+      };
+
+      const loader = document.getElementById('loader');
+      const resultBox = document.getElementById('result');
+      const resultText = document.getElementById('resultText');
+      const resultImage = document.getElementById('resultImage');
+
+      loader.style.display = 'block';
+      resultBox.style.display = 'none';
+
+      setTimeout(() => {
+        loader.scrollIntoView({ behavior: 'smooth' });
+      }, 100);
+
+      fetch('/predict', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      })
+      .then(res => res.json())
+      .then(response => {
+        loader.style.display = 'none';
+
+        resultImage.src = `data:image/png;base64,${response.image_base64}`;
+        resultImage.style.display = 'block';
+
+        resultText.innerHTML = `
+          🌿 Vegetation lost: <strong>${response.percent_deforested}%</strong><br>
+          🌱 Vegetation gained: <strong>${response.percent_regrowth}%</strong>
+        `;
+        resultText.style.display = 'block';
+        resultBox.style.display = 'block';
+
+        // ✅ Show legend now
+        document.getElementById("legend").style.display = "block";
+
+        setTimeout(() => {
+          resultBox.scrollIntoView({ behavior: 'smooth' });
+        }, 100);
+      })
+      .catch(err => {
+        loader.style.display = 'none';
+        console.error(err);
+        alert("❌ Failed to fetch results.");
+      });
+    }
+
+    const themeToggle = document.getElementById("themeToggle");
+    themeToggle.onclick = () => {
+      const html = document.documentElement;
+      const current = html.getAttribute("data-theme");
+      const next = current === "light" ? "dark" : "light";
+      html.setAttribute("data-theme", next);
+      themeToggle.textContent = next === "dark" ? "☀️ Light Mode" : "🌙 Dark Mode";
+    };
+  </script>
+</body>
+</html>
