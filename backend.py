@@ -12,6 +12,9 @@ import gdown
 from dotenv import load_dotenv
 
 load_dotenv()
+service_account = os.getenv("SERVICE_KEY_ID")
+credentials = ee.ServiceAccountCredentials(service_account, 'private-key.json')
+ee.Initialize(credentials)
 
 MODEL_PATH = "deforestation_unet_full_model.pt"
 MODEL_URL = os.getenv("MODEL_URL")
@@ -20,8 +23,6 @@ MODEL_URL = os.getenv("MODEL_URL")
 if not os.path.exists(MODEL_PATH):
     print("Model not found. Downloading from Google Drive...")
     gdown.download(MODEL_URL, MODEL_PATH, quiet=False)
-
-ee.Initialize(project=os.environ["project-id"])
 
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 
