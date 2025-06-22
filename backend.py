@@ -8,8 +8,20 @@ from rasterio.io import MemoryFile
 import torch
 import segmentation_models_pytorch as smp
 import matplotlib.pyplot as plt
+import gdown
+from dotenv import load_dotenv
 
-ee.Initialize(project='deforestation-detection-459814')
+load_dotenv()
+
+MODEL_PATH = "deforestation_unet_full_model.pt"
+MODEL_URL = os.getenv("MODEL_URL")
+
+# Download model only if it doesn't exist
+if not os.path.exists(MODEL_PATH):
+    print("Model not found. Downloading from Google Drive...")
+    gdown.download(MODEL_URL, MODEL_PATH, quiet=False)
+
+ee.Initialize(project=os.environ["project-id"])
 
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 
