@@ -112,19 +112,10 @@ Deforestation-Detection/
 │   ├── val/                     # Validation image and mask patches
 │   └── test/                    # Test image and mask patches
 │
-├── assets/                      # Visual assets for README and demo
-│   ├── input.png
-│   ├── ground_truth.png
-│   └── prediction.png
-│
 ├── requirements.txt             # Python dependencies
 ├── README.md                    # This file
 └── .gitattributes / .gitignore  # GitHub config files
 ```
-
-Absolutely! Here’s the **continued `README.md`** from the `## 🧪 How to Run Locally` section, in proper Markdown format and without using triple backticks for bash commands:
-
----
 
 ## 🧪 How to Run Locally
 
