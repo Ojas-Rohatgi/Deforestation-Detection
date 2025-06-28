@@ -211,7 +211,6 @@ SRM University, Sonepat, Haryana, India
 
 * 🔗 GitHub: [Ojas-Rohatgi](https://github.com/Ojas-Rohatgi)
 * 🔗 Hugging Face: [ojasrohatgi](https://huggingface.co/ojasrohatgi)
-* 📧 Email: [ojasrohatgi.work@gmail.com](mailto:ojasrohatgi.work@gmail.com)
 
 ---
 
