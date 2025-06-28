@@ -185,8 +185,8 @@ This app is live at:
 | Component        | Tools Used                             |
 | ---------------- | -------------------------------------- |
 | Model            | TensorFlow 2.x, Keras, U-Net           |
-| Data Source      | Google Earth Engine (Sentinel-2, NDVI) |
-| Frontend         | Streamlit, Leaflet.js                  |
+| Data Source      | Google Earth Engine (Landsat-8, NDVI) |
+| Frontend         | Flask, Leaflet.js                  |
 | Image Processing | NumPy, OpenCV, Matplotlib, PIL         |
 | Deployment       | Hugging Face Spaces, GitHub            |
 | Output Formats   | PNG masks, NumPy arrays, TFRecords     |
