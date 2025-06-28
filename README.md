@@ -24,7 +24,7 @@ We aim to answer this by building a robust deep learning pipeline that:
 We use **Google Earth Engine (GEE)** to fetch Sentinel-2 or Landsat-8 imagery and NDVI indices.
 
 ### Data Sources:
-- **Imagery**: Sentinel-2 (10m resolution), optionally Landsat-8.
+- **Imagery**: Landsat-8 (30m resolution), optionally Sentinel-2 (10m resolution).
 - **Labels**: Derived using NDVI and/or forest loss layers from Global Forest Change dataset.
 
 ### Preprocessing:
