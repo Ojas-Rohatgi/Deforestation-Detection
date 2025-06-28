@@ -65,15 +65,6 @@ The trained model is evaluated on a held-out test set using the following metric
 - **Precision & Recall**: To understand false positives and false negatives.
 - **F1 Score**: Harmonic mean of precision and recall.
 
-### 🖼️ Visual Results
-
-Example: Predicted mask vs. ground truth
-
-| Input Image | Ground Truth | Model Prediction |
-|-------------|--------------|------------------|
-| ![](assets/input.png) | ![](assets/ground_truth.png) | ![](assets/prediction.png) |
-
-These qualitative results help visually verify how accurately the model distinguishes forested and deforested regions.
 
 ---
 
