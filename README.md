@@ -106,7 +106,6 @@ pip install -r requirements.txt
 ### 3. Prepare data
 
 Ensure you have satellite imagery and labeled NDVI masks stored in the `data/` folder.
-You can generate training data using Earth Engine export scripts in `earth_engine/export_data.py`.
 
 ### 4. Train the model
 
