@@ -84,39 +84,6 @@ The backend takes user inputs (`lat, lon, year`), queries GEE for imagery, prepr
 
 ---
 
-## 🧾 Project Structure
-
-```bash
-Deforestation-Detection/
-│
-├── app/                         # Streamlit-based frontend interface
-│   ├── main.py                  # Streamlit UI & user interaction logic
-│   ├── map_component.html       # Leaflet map integration for coordinate input
-│   ├── overlay.py               # Image overlay + visualization helpers
-│   └── utils.py                 # Patching, preprocessing, and GEE interaction
-│
-├── model/                       # Trained model artifacts
-│   └── unet_deforestation.h5    # Final trained U-Net model
-│
-├── earth_engine/                # Scripts for working with GEE
-│   └── export_data.py           # Downloads satellite images + NDVI labels
-│
-├── training/                    # Model architecture and training logic
-│   ├── train.py                 # Model training loop
-│   ├── evaluate.py              # Evaluation script for test data
-│   ├── metrics.py               # IoU, Dice, and other evaluation metrics
-│   └── unet_model.py            # Custom U-Net implementation
-│
-├── data/                        # Data directory (images, masks, TFRecords)
-│   ├── train/                   # Training image and mask patches
-│   ├── val/                     # Validation image and mask patches
-│   └── test/                    # Test image and mask patches
-│
-├── requirements.txt             # Python dependencies
-├── README.md                    # This file
-└── .gitattributes / .gitignore  # GitHub config files
-```
-
 ## 🧪 How to Run Locally
 
 ### 1. Clone the repository
@@ -144,7 +111,7 @@ You can generate training data using Earth Engine export scripts in `earth_engin
 ### 4. Train the model
 
 ```bash
-python training/train.py --epochs 50 --batch\_size 16 --data\_dir ./data --save\_model ./model/unet\_deforestation.h5
+python training.py --epochs 50 --batch\_size 16 --data\_dir ./data --save\_model ./model/unet\_deforestation.h5
 
 ```
 You can configure the number of epochs, batch size, and save path as needed.
@@ -153,7 +120,7 @@ You can configure the number of epochs, batch size, and save path as needed.
 
 ```bash
 cd app
-streamlit run main.py
+python app.py
 
 ```
 This will launch a web interface where you can:
@@ -216,7 +183,7 @@ SRM University, Sonepat, Haryana, India
 
 ## 📜 License
 
-This project is licensed under the **MIT License**.
+This project is licensed under the **Apache License**.
 See the [LICENSE](LICENSE) file for full license text.
 
 ---
